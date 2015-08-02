@@ -13,9 +13,9 @@ class OrderProcessorSpecs extends org.specs2.mutable.Specification {
   val catalog = Set(toothBrush, toothPaste, dentalFloss)
 
   val dentalHygieneBundle = Bundle(Set(
-    BundleItem(toothBrush, 1),
-    BundleItem(toothPaste, 1),
-    BundleItem(dentalFloss, 1)), 6.00d)
+    OrderItem(toothBrush, 1),
+    OrderItem(toothPaste, 1),
+    OrderItem(dentalFloss, 1)), 6.00d)
 
   "Generate an order" >> {
     val order = Order(Set(OrderItem(toothBrush, 2)))
@@ -43,21 +43,13 @@ class OrderProcessorSpecs extends org.specs2.mutable.Specification {
     orderProcessor.total(order).price mustEqual Money.of(cad, 14.00d)
   }
 
-  "Calculate order total with 1 bundle discount applied" >> {
+  "Order contains a bundle" >> {
     val order = Order(Set(
-      OrderItem(toothBrush, 1),
+      OrderItem(toothBrush, 2),
       OrderItem(toothPaste, 1),
       OrderItem(dentalFloss, 1)))
 
     val orderProcessor = new OrderProcessor(catalog, Set(dentalHygieneBundle))
-    orderProcessor.total(order).price mustEqual Money.of(cad, 6.00d)
+    orderProcessor.orderContainsBundle(order, dentalHygieneBundle) must beTrue
   }
-
-//  "Calculate total with a bundle" >> {
-//    val catalog = Set(toothBrush, toothPaste, dentalFloss)
-//    val bundles = Set(Bundle(Set(toothBrush, toothPaste), 4.99d))
-//
-//    val orderProcessor = new OrderProcessor(catalog, bundles)
-//    orderProcessor.calculateTotal()
-//  }
 }

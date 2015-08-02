@@ -6,8 +6,7 @@ case class Order(items: Set[OrderItem])
 case class OrderTotal(order: Order, bundles: Set[Bundle], price: Money)
 case class OrderItem(catalogItem: CatalogItem, quantity: Int)
 case class CatalogItem(itemName: String, price: Double)
-case class Bundle(items: Set[BundleItem], price: Double)
-case class BundleItem(catalogItem: CatalogItem, quantity: Int)
+case class Bundle(items: Set[OrderItem], price: Double)
 
 class OrderProcessor(catalog: Set[CatalogItem], bundles: Set[Bundle]) {
   val cad = CurrencyUnit.of("CAD")
@@ -20,8 +19,19 @@ class OrderProcessor(catalog: Set[CatalogItem], bundles: Set[Bundle]) {
     OrderTotal(order, Set.empty, orderTotal)
   }
 
-  def applyBundle(order: Order, bundle: Bundle): OrderTotal = {
-
+  def orderContainsBundle(order: Order, bundle: Bundle): Boolean = {
+    val builtBundle = order.items.foldLeft(Set[OrderItem]()) { (bundleBuilder, orderItem) =>
+      val bundleItem = bundle.items.find(bundleItem => bundleItem.catalogItem == orderItem.catalogItem)
+      bundleItem match {
+        case Some(x) => {
+          val bundleQuantity = orderItem.quantity / x.quantity
+          if (bundleQuantity >= 1) bundleBuilder ++ bundleItem
+          else bundleBuilder
+        }
+        case None => bundleBuilder
+      }
+    }
+    bundle.items == builtBundle
   }
 
   def quantityPrice(item: OrderItem) =
