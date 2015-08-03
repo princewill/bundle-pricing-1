@@ -1,32 +1,12 @@
 package seglo
 
-import org.joda.money.{CurrencyUnit, Money}
-
 import scala.annotation.tailrec
 
-trait OrderEntry {
-  def name: String
-  def price: BigDecimal
-}
-
-case class CatalogItem(name: String, price: BigDecimal) extends OrderEntry
-case class Bundle(name: String, items: Seq[CatalogItem], price: BigDecimal) extends OrderEntry
-
-case class Order(entries: Seq[OrderEntry]) {
-  val cad = CurrencyUnit.of("CAD")
-
-  lazy val total: BigDecimal =
-    entries.foldLeft(Money.of(cad, BigDecimal(0).bigDecimal)) {
-      (total: Money, orderEntry) => total.plus(Money.of(cad, orderEntry.price.bigDecimal))
-    }.getAmount
-}
-
-object BundleProcessor {
+object OrderBundlingService {
   def calculate(order: Order, allBundles: Set[Bundle]): Order = {
     val orders = orderPermutations(order, allBundles)
     orders.minBy(_.total)
   }
-
 
   def orderPermutations(originalOrder: Order, allBundles: Set[Bundle]): Set[Order] = {
 
