@@ -8,20 +8,17 @@ class BundleProcessorSpecs extends org.specs2.mutable.Specification {
   val banana = CatalogItem("Banana", 1.00d)
   val grapefruit = CatalogItem("Grapefruit", 3.00d)
 
-  val doubleAppleBundle = Bundle("Double Apple Bundle", Set(OrderItem(apple, 2)), 2.00d)
+  val doubleAppleBundle = Bundle("Double Apple Bundle", Seq(apple, apple), 2.00d)
   val appleBananaBundle = Bundle(
     "Apple & Banana Bundle",
-    Set(OrderItem(apple, 1), OrderItem(banana, 1)),
+    Seq(apple, banana),
     2.00d)
   val threeGrapefruitBundle = Bundle("Three Grapefruit Bundle",
-    Set(OrderItem(grapefruit, 3)), 6.00d)
+    Seq(grapefruit, grapefruit, grapefruit), 6.00d)
 
   val allBundles = Set(doubleAppleBundle, appleBananaBundle, threeGrapefruitBundle)
 
-  val twoBundleOrder = Order(Set(
-    OrderItem(apple, 3),
-    OrderItem(banana, 1),
-    OrderItem(grapefruit, 1)))
+  val twoBundleOrder = Order(Seq(apple, apple, apple, banana, grapefruit))
 
 //  "OrderProcessor" >> {
 
