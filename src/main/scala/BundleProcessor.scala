@@ -2,6 +2,8 @@ package seglo
 
 import org.joda.money.{CurrencyUnit, Money}
 
+import scala.annotation.tailrec
+
 trait OrderEntry
 
 case class CatalogItem(name: String, price: Double) extends OrderEntry
@@ -13,13 +15,10 @@ case class Order(entries: Seq[OrderEntry]) {
   lazy val price =
     entries.foldLeft(Money.of(cad, 0d)) { (total: Money, orderEntry) =>
       orderEntry match {
-        case CatalogItem(name, price) => addToTotal(total, price)
-        case Bundle(name, items, price) => addToTotal(total, price)
+        case CatalogItem(name, price) => total.plus(Money.of(cad, price))
+        case Bundle(name, items, price) => total.plus(Money.of(cad, price))
       }
     }.getAmount
-
-  private def addToTotal(total: Money, price: Double) =
-    total.plus(Money.of(cad, price))
 }
 
 object BundleProcessor {
@@ -28,14 +27,26 @@ object BundleProcessor {
     orders.minBy(_.price)
   }
 
-  def orderPermutations(order: Order, bundles: Set[Bundle]): Set[Order] = {
-    val bundledOrders = bundles.foldLeft(Set.empty[Order]) { (orders, bundle) =>
-      applyBundleToOrder(order, bundle) match {
-        case Some(x) => orders + x
-        case None => orders
+
+  def orderPermutations(originalOrder: Order, allBundles: Set[Bundle]): Set[Order] = {
+
+    @tailrec
+    def go(orders: Set[Order], bundles: Set[Bundle], orderAcc: Set[Order]): Set[Order] = {
+      val bundledOrders = bundles.foldLeft(Set.empty[Order]) { (orderAcc, bundle) =>
+        orders.foldLeft(orderAcc) { (orderAcc, order) =>
+          applyBundleToOrder(order, bundle) match {
+            case Some(bundledOrder) => orderAcc + bundledOrder
+            case None => orderAcc
+          }
+        }
       }
+      if (bundledOrders.size > 0)
+        go(bundledOrders, bundles, bundledOrders ++ orderAcc)
+      else
+        orderAcc
     }
-    bundledOrders.flatMap(bundledOrder => orderPermutations(bundledOrder, bundles)) ++ bundledOrders
+
+    go(Set(originalOrder), allBundles, Set.empty[Order])
   }
 
   def applyBundleToOrder(order: Order, bundle: Bundle): Option[Order] = {
