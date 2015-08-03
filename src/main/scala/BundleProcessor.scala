@@ -3,11 +3,13 @@ package seglo
 import org.joda.money.{CurrencyUnit, Money}
 
 case class CatalogItem(name: String, price: Double)
+
 case class Bundle(name: String, items: Set[OrderItem], price: Double)
 
 trait OrderEntry
 
 case class OrderItem(item: CatalogItem, quantity: Int) extends OrderEntry
+
 case class BundleItem(bundle: Bundle, quantity: Int) extends OrderEntry
 
 case class Order(entries: Set[OrderEntry]) {
@@ -26,23 +28,25 @@ case class Order(entries: Set[OrderEntry]) {
 }
 
 object BundleProcessor {
-  def calculate(order: Order, allBundles: Set[Bundle]): Order =
-    orderPermutations(order, allBundles).minBy(_.price)
+  def calculate(order: Order, allBundles: Set[Bundle]): Order = {
+    val orders = orderPermutations(order, allBundles)
+    orders.minBy(_.price)
+  }
 
-  def orderPermutations(order: Order, bundles: Set[Bundle]): Set[Order] = {
+
+  def orderPermutations(originalOrder: Order, bundles: Set[Bundle]): Set[Order] = {
+
     def go(order: Order, bundles: Set[Bundle], possibleOrders: Set[Order]): Set[Order] = {
-      order.entries.foldLeft(possibleOrders) { (orderPerms, orderEntry) =>
-        val subBundles = possibleBundles(order, bundles)
-        if (subBundles.size == 0) orderPerms
-        else {
-          val bundledOrders = subBundles.map((bundle) => applyBundleToOrder(order, bundle))
-          val nestedOrders = bundledOrders.flatMap(order2 => go(order2, subBundles, possibleOrders))
-          possibleOrders ++ nestedOrders
-        }
+      val subBundles = possibleBundles(order, bundles)
+      if (subBundles.size == 0) possibleOrders
+      else {
+        val bundledOrders = subBundles.map((bundle) => applyBundleToOrder(order, bundle))
+        val nestedOrders = bundledOrders.flatMap(order2 => go(order2, subBundles, bundledOrders))
+        nestedOrders ++ possibleOrders
       }
     }
 
-    go(order, bundles, Set.empty[Order])
+    go(originalOrder, bundles, Set(originalOrder))
   }
 
   /*
@@ -79,7 +83,7 @@ object BundleProcessor {
           bundleItem match {
             case Some(OrderItem(item, bundleQuantity)) if quantity / bundleQuantity > 0 =>
               newOrderEntries + OrderItem(item, quantity - bundleQuantity)
-            case None => newOrderEntries
+            case None => newOrderEntries + orderEntry
           }
         }
         // re-add all other OrderEntry's (BundleItem) already found in order
@@ -95,7 +99,7 @@ object BundleProcessor {
 
     matchedBundled match {
       case Some(BundleItem(b, quantity)) => Order(orderEntries + BundleItem(bundle, quantity + 1))
-      case None => Order(orderEntries + BundleItem(bundle, 1))
+      case _ => Order(orderEntries + BundleItem(bundle, 1))
     }
   }
 }
