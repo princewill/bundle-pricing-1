@@ -13,6 +13,9 @@ case class Bundle(name: String, items: Seq[CatalogItem], price: BigDecimal) exte
 case class Order(entries: Seq[OrderEntry]) {
   val cad = CurrencyUnit.of("CAD")
 
+  /**
+   * Lazily calculate the total of all OrderEntry's using the joda-money library.
+   */
   lazy val total: BigDecimal =
     entries.foldLeft(Money.of(cad, BigDecimal(0).bigDecimal)) {
       (total: Money, orderEntry) => total.plus(Money.of(cad, orderEntry.price.bigDecimal))

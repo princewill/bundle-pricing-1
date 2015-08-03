@@ -1,23 +1,12 @@
 package seglo
 
+import TestData._
+
 class OrderBundlingServiceSpecs extends org.specs2.mutable.Specification {
-  val apple = CatalogItem("Apple", BigDecimal(1.50))
-  val banana = CatalogItem("Banana", BigDecimal(1.00))
-  val grapefruit = CatalogItem("Grapefruit", BigDecimal(3.00))
-
-  val doubleAppleBundle = Bundle("Double Apple Bundle",
-    Seq(apple, apple), BigDecimal(2.00))
-  val appleBananaBundle = Bundle("Apple & Banana Bundle",
-    Seq(apple, banana), BigDecimal(2.00))
-  val threeGrapefruitBundle = Bundle("Three Grapefruit Bundle",
-    Seq(grapefruit, grapefruit, grapefruit), BigDecimal(6.00))
-
-  val allBundles = Set(doubleAppleBundle, appleBananaBundle, threeGrapefruitBundle)
-
   "Two bundles applied to order for total of $7.00" >> {
     val twoBundleOrder = Order(Seq(apple, apple, apple, banana, grapefruit))
 
-    val order = OrderBundlingService.calculate(twoBundleOrder, allBundles)
+    val order = OrderBundlingService.calculate(twoBundleOrder, bundles)
 
     order.total mustEqual BigDecimal(7.00)
     order.entries must containTheSameElementsAs(Seq(doubleAppleBundle, appleBananaBundle, grapefruit))
@@ -26,7 +15,7 @@ class OrderBundlingServiceSpecs extends org.specs2.mutable.Specification {
   "No bundle can be applied, return original order total of $4.50" >> {
     val noBundleOrder = Order(Seq(apple, grapefruit))
 
-    val order = OrderBundlingService.calculate(noBundleOrder, allBundles)
+    val order = OrderBundlingService.calculate(noBundleOrder, bundles)
 
     order.total mustEqual BigDecimal(4.50)
     order.entries must containTheSameElementsAs(Seq(apple, grapefruit))
@@ -35,7 +24,7 @@ class OrderBundlingServiceSpecs extends org.specs2.mutable.Specification {
   "The same bundle is applied to an order twice" >> {
     val sameBundleOrder = Order(Seq(apple, apple, apple, apple))
 
-    val order = OrderBundlingService.calculate(sameBundleOrder, allBundles)
+    val order = OrderBundlingService.calculate(sameBundleOrder, bundles)
 
     order.total mustEqual BigDecimal(4.00)
     order.entries must containTheSameElementsAs(Seq(doubleAppleBundle, doubleAppleBundle))
@@ -50,10 +39,10 @@ class OrderBundlingServiceSpecs extends org.specs2.mutable.Specification {
     order.entries must containTheSameElementsAs(appleBananaOrder.entries)
   }
 
-  "Mega fruit order finds lowest price with bundles and saves $6.50" >> {
+  "Mega fruit order finds lowest price with bundles and save $6.50" >> {
     val megaFruitOrder = Order(Seq(apple, banana, grapefruit, apple, apple, banana, grapefruit, banana, apple, grapefruit, grapefruit, apple, banana, banana, banana, apple, grapefruit, banana, apple))
 
-    val order = OrderBundlingService.calculate(megaFruitOrder, allBundles)
+    val order = OrderBundlingService.calculate(megaFruitOrder, bundles)
 
     // save 6.50!
     megaFruitOrder.total mustEqual BigDecimal(32.50)
