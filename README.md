@@ -45,12 +45,12 @@ Await.result(checkoutFuture, Duration.Inf) mustEqual BigDecimal(5.00)
 ## Assumptions
 
 * Order entries do not contain quantities, instead repeated order entries can be included in an order.  I found that simplifying the model in this way reduced the complexity of my implementation.
-* 3rd party Libraries are allowed.  I used [joda-money](http://www.joda.org/joda-money/) to aggregate prices using the CAD currency unit.
+* 3rd party libraries are allowed.  I used [joda-money](http://www.joda.org/joda-money/) to aggregate prices using the CAD currency unit.  Looking back, this probably wasn't necessary and could have been achieved with Scala's BigDecimal alone.
 
 ## Possible Optimizations
 
-* Only use subset of bundles when recursing into order permutations.  Only the bundles that were successfully applied to the order.
-* Use imperative programming techniques to mutate state instead of FP & recursive implementation.
+* Only use subset of bundles when recursing into order permutations.  Only the bundles that were successfully applied to the parent order.
+* Use imperative programming techniques to generate order permutations by using a while loop and maintaining state.  I chose an FP & recursive implementation as a first choice because it's more in line with "Idiomatic Scala".
 
 ## Bundle Pricing Resources
 * https://en.wikipedia.org/wiki/Product_bundling
