@@ -7,15 +7,13 @@ import ExecutionContext.Implicits.global
  * The OrderApi is used to checkout items.
  *
  * Assumptions:
- * 1) Items in catalog all over a price defined.
+ * 1) Each item in the catalog has a price defined.
  * 2) Bundles only contain items that exist in the catalog.
  *
- * TODO:
- * - Inject OrderBundlingService
  * @param catalog The full set of catalog items that can be checked out.
- * @param bundles The full set of bundles that can be applied to orders.
+ * @param orderService The service implementation to use to calculate order totals.
  */
-class OrderApi(catalog: Set[CatalogItem], bundles: Set[Bundle]) {
+class OrderApi(catalog: Set[CatalogItem], orderService: OrderService) {
   /**
    * Checkout the order and receive the total amount.
    * @param orderDto The Order Data Transfer Object (DTO)
@@ -30,8 +28,8 @@ class OrderApi(catalog: Set[CatalogItem], bundles: Set[Bundle]) {
     val p = Promise[BigDecimal]()
     Future {
       if (validate(orderDto, p)) {
-        val bundledOrder = OrderBundlingService.calculate(orderDtoToOrder(orderDto), bundles)
-        p.success(bundledOrder.total)
+        val processedOrder = orderService.calculate(orderDtoToOrder(orderDto))
+        p.success(processedOrder.total)
       }
     }
     p.future

@@ -2,22 +2,29 @@ package seglo
 
 import scala.annotation.tailrec
 
+trait OrderService {
+  def calculate(order: Order): Order
+}
+
 /**
  * The OrderBundlingService calculates all permutations of orders and identifies
  * the one with the lowest price.
- *
- * TODO:
- * - Make a class.  Trait `calculate` so other OrderServices can be used in the API
  */
-object OrderBundlingService {
+class OrderBundlingService(bundles: Set[Bundle]) extends OrderService {
+
+  /**
+   * Pass on to calculate with bundle support.
+   */
+  def calculate(order: Order) = calculate(order, bundles)
+
   /**
    * Find the lowest order total of all order bundle permutations
    * @param order The original order with no bundles.
-   * @param allBundles A set of bundles to apply to the order.
+   * @param bundles A set of bundles to apply to the order.
    * @return The bundled order with the lowest total price.
    */
-  def calculate(order: Order, allBundles: Set[Bundle]): Order =
-    orderPermutations(order, allBundles).minBy(_.total)
+  def calculate(order: Order, bundles: Set[Bundle]) : Order =
+    orderPermutations(order, bundles).minBy(_.total)
 
   /**
    * Generate all order bundle permutations.
