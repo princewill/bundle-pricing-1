@@ -1,5 +1,3 @@
-package seglo
-
 object TestData {
   val apple = CatalogItem("Apple", BigDecimal(1.50))
   val banana = CatalogItem("Banana", BigDecimal(1.00))

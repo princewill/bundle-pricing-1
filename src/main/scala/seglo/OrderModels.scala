@@ -1,5 +1,3 @@
-package seglo
-
 import org.joda.money.{CurrencyUnit, Money}
 
 trait OrderEntry {

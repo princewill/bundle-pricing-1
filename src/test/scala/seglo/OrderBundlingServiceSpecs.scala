@@ -1,5 +1,3 @@
-package seglo
-
 import TestData._
 import org.specs2.execute.{Result, AsResult}
 import org.specs2.specification.ForEach

@@ -1,5 +1,3 @@
-package seglo
-
 import scala.annotation.tailrec
 
 trait OrderService {

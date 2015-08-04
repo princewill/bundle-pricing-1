@@ -1,5 +1,3 @@
-package seglo
-
 import scala.concurrent.{ExecutionContext, Future, Promise}
 import ExecutionContext.Implicits.global
 
