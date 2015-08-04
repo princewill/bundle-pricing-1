@@ -6,6 +6,11 @@
 
 ## Run tests
 
+### Build Environment
+
+* Oracle JDK 1.8
+* Scala 2.11.7
+
 ```bash
 sbt test
 ```
