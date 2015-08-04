@@ -33,13 +33,13 @@ val grapefruit = CatalogItem("Grapefruit", BigDecimal(3.00))
 val catalog = Set(apple, banana, grapefruit)
 
 val appleBananaBundle = Bundle("Apple & Banana Bundle",
-    Seq(apple, banana), BigDecimal(2.00))
+  Seq(apple, banana), BigDecimal(2.00))
 
-val orderApi = new OrderApi(catalog, Set(appleBananaBundle))
+val orderApi = new OrderApi(catalog, new OrderBundlingService(Set(appleBananaBundle)))
 
 val checkoutFuture = orderApi.checkout(orderDto)
 
-Await.result(checkoutFuture, Duration.Inf) == BigDecimal(5.00)
+Await.result(checkoutFuture, Duration.Inf) mustEqual BigDecimal(5.00)
 ```
 
 ## Assumptions
