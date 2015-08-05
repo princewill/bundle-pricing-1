@@ -31,15 +31,16 @@ class OrderBundlingService(bundles: Set[Bundle]) extends OrderService {
   def orderPermutations(originalOrder: Order, allBundles: Set[Bundle]): Set[Order] = {
 
     /**
-     * Recursively apply bundles to each order permutation.
+     * Recursively apply bundles to each order permutation until
+     * bundles can no longer be applied.
      */
     @tailrec
     def go(orders: Set[Order], bundles: Set[Bundle], orderAcc: Set[Order]): Set[Order] = {
-      val bundledOrders = bundles.foldLeft(Set.empty[Order]) { (orderAcc, bundle) =>
-        orders.foldLeft(orderAcc) { (orderAcc, order) =>
+      val bundledOrders = bundles.foldLeft(Set.empty[Order]) { (bundledOrders, bundle) =>
+        orders.foldLeft(bundledOrders) { (bundledOrders, order) =>
           applyBundleToOrder(order, bundle) match {
-            case Some(bundledOrder) => orderAcc + bundledOrder
-            case None => orderAcc
+            case Some(bundledOrder) => bundledOrders + bundledOrder
+            case None => bundledOrders
           }
         }
       }
