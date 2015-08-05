@@ -51,6 +51,7 @@ Await.result(checkoutFuture, Duration.Inf) mustEqual BigDecimal(5.00)
 
 * Only use subset of bundles when recursing into order permutations.  Only the bundles that were successfully applied to the parent order.
 * Use imperative programming techniques to generate order permutations by using a while loop and maintaining state.  I chose an FP & recursive implementation as a first choice because it's more in line with "Idiomatic Scala".
+* Only return leaf level bundles; order/bundle permutations that can no longer be bundled.
 
 ## Bundle Pricing Resources
 * https://en.wikipedia.org/wiki/Product_bundling
