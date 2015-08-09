@@ -9,7 +9,9 @@ lazy val `bundle-pricing` = (project in file(".")).
       "org.specs2" %% "specs2-core" % "3.6" % "test",
       "com.storm-enroute" %% "scalameter" % "0.6" % "test"
     ),
-    resolvers += "Scalaz Bintray Repo" at "https://dl.bintray.com/scalaz/releases",
+    resolvers ++= Seq(
+      "Scalaz Bintray Repo" at "https://dl.bintray.com/scalaz/releases",
+      "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"),
     testFrameworks += new TestFramework("org.scalameter.ScalaMeterFramework"),
     logBuffered := false,
     parallelExecution in Test := false
