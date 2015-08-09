@@ -6,7 +6,11 @@ lazy val `bundle-pricing` = (project in file(".")).
     libraryDependencies ++= Seq(
       "org.joda" % "joda-money" % "0.10.0",
       "org.joda" % "joda-convert" % "1.7",
-      "org.specs2" %% "specs2-core" % "3.6" % "test"
+      "org.specs2" %% "specs2-core" % "3.6" % "test",
+      "com.storm-enroute" %% "scalameter" % "0.6" % "test"
     ),
-    resolvers += "Scalaz Bintray Repo" at "https://dl.bintray.com/scalaz/releases"
+    resolvers += "Scalaz Bintray Repo" at "https://dl.bintray.com/scalaz/releases",
+    testFrameworks += new TestFramework("org.scalameter.ScalaMeterFramework"),
+    logBuffered := false,
+    parallelExecution in Test := false
   )
