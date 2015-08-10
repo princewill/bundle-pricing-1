@@ -6,7 +6,6 @@ import seglo._
  * Optimization of OrderBundlingService
  * - Passes in a subset of bundles for each iteration
  * - No longer tail recursive because the recursive call is inside a flatMap
- * @param bundles
  */
 class OrderBundlingServiceSubBundler(bundles: Set[Bundle])
   extends OrderBundlingService(bundles) {

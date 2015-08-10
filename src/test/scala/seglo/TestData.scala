@@ -21,4 +21,6 @@ object TestData {
   val grapefruitDto = CatalogItemDto("Grapefruit")
 
   val orderDto = OrderDto(Seq(appleDto, bananaDto, grapefruitDto))
+
+  val megaFruitOrder = Order(Seq(apple, banana, grapefruit, apple, apple, banana, grapefruit, banana, apple, grapefruit, grapefruit, apple, banana, banana, banana, apple, grapefruit, banana, apple))
 }

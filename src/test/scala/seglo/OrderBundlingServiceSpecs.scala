@@ -1,18 +1,7 @@
 package seglo
 
-import org.specs2.execute.{Result, AsResult}
-import org.specs2.specification.ForEach
 import seglo.optimizations._
 import TestData._
-
-/**
- * Injects new OrderBundlingService into each test case.
- */
-//trait OrderBundlingServiceContext extends ForEach[OrderBundlingService] {
-//  def foreach[R: AsResult](f: OrderBundlingService => R): Result = {
-//    AsResult(f(new OrderBundlingServiceLeaves(bundles)))
-//  }
-//}
 
 class OrderBundlingServiceSpecs extends org.specs2.mutable.Specification {
   /**
@@ -21,7 +10,7 @@ class OrderBundlingServiceSpecs extends org.specs2.mutable.Specification {
   Seq(
     new OrderBundlingService(bundles), /* base implementation */
     new OrderBundlingServiceSubBundler(bundles),
-    new OrderBundlingServiceLeaves(bundles),
+    //new OrderBundlingServiceLeaves(bundles),
     new OrderBundlingServiceImperative(bundles)) foreach { service =>
 
     service.getClass.getSimpleName >> {
@@ -63,28 +52,37 @@ class OrderBundlingServiceSpecs extends org.specs2.mutable.Specification {
       }
 
       "Mega fruit order finds lowest price with bundles and save $6.50" >> {
-        val megaFruitOrder = Order(Seq(apple, banana, grapefruit, apple, apple, banana, grapefruit, banana, apple, grapefruit, grapefruit, apple, banana, banana, banana, apple, grapefruit, banana, apple))
-
         val order = service.calculate(megaFruitOrder, bundles)
 
         // save 6.50!
         megaFruitOrder.total mustEqual BigDecimal(32.50)
         order.total mustEqual BigDecimal(26.00)
 
-        order.entries must containTheSameElementsAs(
-          Seq(
-            grapefruit,
-            banana,
-            grapefruit,
-            banana,
-            appleBananaBundle,
-            appleBananaBundle,
-            threeGrapefruitBundle,
-            doubleAppleBundle,
-            appleBananaBundle,
-            appleBananaBundle,
-            appleBananaBundle))
+// there are more than 1 order combinations at this price
+//        order.entries must containTheSameElementsAs(
+//          Seq(
+//            grapefruit,
+//            banana,
+//            grapefruit,
+//            banana,
+//            appleBananaBundle,
+//            appleBananaBundle,
+//            threeGrapefruitBundle,
+//            doubleAppleBundle,
+//            appleBananaBundle,
+//            appleBananaBundle,
+//            appleBananaBundle))
       }
+
+//      "Mega fruit order has n lowest priced orders" >> {
+//        val orders = service.orderPermutations(megaFruitOrder, bundles)
+//
+//        val groupedOrders = orders.groupBy(_.total)
+//        val lowestPriceOrders = groupedOrders(groupedOrders.keys.min)
+//        println(service.getClass.getSimpleName + ": " + lowestPriceOrders.size)
+//
+//        success
+//      }
     }
   }
 }
