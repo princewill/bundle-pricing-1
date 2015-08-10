@@ -37,23 +37,18 @@ class OrderBundlingServiceImperative(bundles: Set[Bundle])
     var bundleItems = scala.collection.mutable.ArrayBuffer(bundle.items: _*)
     var orderEntries = scala.collection.mutable.ArrayBuffer(order.entries: _*)
 
-    var orderDec = order.entries
-    var i = 0
-    while(bundleItems.length > 0 && i < orderDec.length) {
-      val bundleItem = bundleItems.head
-      var orderEntry = orderDec.head
-      if (bundleItem == orderEntry) {
+    var orderDec = order.entries // iterate over order entries by popping one each loop
+    while(bundleItems.length > 0 && orderDec.length > 0) {
+      val orderEntry = orderDec.head
+      if (bundleItems.head == orderEntry) {
         orderEntries -= orderEntry
         bundleItems = bundleItems.tail
       }
       orderDec = orderDec.tail
-      i = i + 1
     }
     if (bundleItems.length > 0)
       None
-    else {
-      orderEntries += bundle
-      Some(Order(orderEntries))
-    }
+    else
+      Some(Order(orderEntries += bundle))
   }
 }
